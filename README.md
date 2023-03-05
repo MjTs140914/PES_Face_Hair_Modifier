@@ -5,7 +5,6 @@ PES_Face_Hair_Modifier  is a [Blender 2.79 and Blender 2.8x](https://www.blender
 This tool is *heavily* based on the 
 
 * [PES-FMDL by the4chancup](https://github.com/the4chancup/pes-fmdl-blender). 
-* [PES2019 Face-Hair Modifier v1.80b by MJTS](https://evo-web.co.uk/threads/pes2019-face-hair-modifier-v1-80b-by-mjts.80593/). 
 
 *This tools is mixed from two base*
 
