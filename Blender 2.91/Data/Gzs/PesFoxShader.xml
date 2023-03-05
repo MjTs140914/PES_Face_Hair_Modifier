@@ -2,22 +2,12 @@
 
 You can add this shader yourself, follow the example below
 
-Don't forget to also add a ShaderList to PesFoxShader.py so that the shader is read by Blender
-
-These are just a few examples ShaderList in PesFoxShader.py
-
-
-			Format: 'Shader', 'Shader', 'Technique'
-ShaderList = [('pes_3ddf_skin_face', 'pes_3ddf_skin_face', 'pes3DDF_Skin_Face')]
-
-
 These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz6bvW6
 
 -->
 
 <FoxShader>
-	<FoxShader shader="pes_3ddf_skin_face">
-		<Parameter technique="pes3DDF_Skin_Face"/>
+	<FoxShader shader="pes_3ddf_skin_face" technique="pes3DDF_Skin_Face">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="SpecularMap_Tex_LIN"/>
@@ -28,8 +18,7 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="Incidence_Roughness" xValue="6.5" yValue="0" zValue="0" wValue="0"/>
 		<Parameter vector="Incidence_Color" xValue="0.725" yValue="0.61" zValue="0.555" wValue="0.7"/>
     </FoxShader>
-	<FoxShader shader="pes3ddc_wet">
-		<Parameter technique="pes3DDC_Wet"/>
+	<FoxShader shader="pes3ddc_wet" technique="pes3DDC_Wet">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="Mask_Tex_LIN"/>
@@ -46,8 +35,7 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="Dirty_Mask" xValue="0" yValue="0" zValue="1" wValue="1"/>
 		<Parameter vector="DBG_TimeSecond" xValue="0" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="pes_3ddc_wet">
-		<Parameter technique="pes3DDC_Wet"/>
+	<FoxShader shader="pes_3ddc_wet" technique="pes3DDC_Wet">
 		<Parameter textures="CubeMap_Tex_LIN"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="Mask_Tex_LIN"/>
@@ -63,8 +51,7 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="Dirty_Mask" xValue="0" yValue="0" zValue="1" wValue="1"/>
 		<Parameter vector="DBG_TimeSecond" xValue="0" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="pes_3ddc_adjust">
-		<Parameter technique="pes3DDC_Adjust_100"/>
+	<FoxShader shader="pes_3ddc_adjust" technique="pes3DDC_Adjust_100">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="Mask_Tex_LIN"/>
@@ -75,8 +62,7 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="NormalBlendRate" xValue="0" yValue="0" zValue="0" wValue="0"/>
 		<Parameter vector="SpeRgmBlendRate" xValue="0" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="fox3ddf_blin_4mt_subnorm">
-		<Parameter technique="fox3DDF_Blin_SubNorm_4MT"/>
+	<FoxShader shader="fox3ddf_blin_4mt_subnorm" technique="fox3DDF_Blin_SubNorm_4MT">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="SpecularMap_Tex_LIN"/>
@@ -91,29 +77,25 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="URepeat_UV" xValue="0" yValue="0" zValue="0" wValue="0"/>
 		<Parameter vector="VRepeat_UV" xValue="0" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="fox3ddf_blin">
-		<Parameter technique="fox3DDF_Blin"/>
+	<FoxShader shader="fox3ddf_blin" technique="fox3DDF_Blin">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="SpecularMap_Tex_LIN"/>
 		<Parameter vector="MatParamIndex_0" xValue="0" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="fox3ddf_blin_ln">
-		<Parameter technique="fox3DDF_Blin_LNM"/>
+	<FoxShader shader="fox3ddf_blin_ln" technique="fox3DDF_Blin_LNM">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="SpecularMap_Tex_LIN"/>
 		<Parameter vector="MatParamIndex_0" xValue="0" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="fox3dfw_blin_ln">
-		<Parameter technique="fox3DDF_Blin_LNM"/>
+	<FoxShader shader="fox3dfw_blin_ln" technique="fox3DDF_Blin_LNM">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="SpecularMap_Tex_LIN"/>
 		<Parameter vector="MatParamIndex_0" xValue="0" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="pes_3ddf_hair2_nrmuv">
-		<Parameter technique="pes3DDF_Hair2_NrmUV"/>
+	<FoxShader shader="pes_3ddf_hair2_nrmuv" technique="pes3DDF_Hair2_NrmUV">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="Base_Tex_2_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
@@ -131,8 +113,7 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="URepeat_UV" xValue="5" yValue="0" zValue="0" wValue="0"/>
 		<Parameter vector="VRepeat_UV" xValue="5" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="pes_3ddf_hair2">
-		<Parameter technique="pes3DDF_Hair2"/>
+	<FoxShader shader="pes_3ddf_hair2" technique="pes3DDF_Hair2">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="SpecularMap_Tex_LIN"/>
@@ -149,20 +130,17 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="URepeat_UV" xValue="5" yValue="0" zValue="0" wValue="0"/>
 		<Parameter vector="VRepeat_UV" xValue="5" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="pes_3dfw_eyeocclusion">
-		<Parameter technique="pes3DFW_EyeOcclusion"/>
+	<FoxShader shader="pes_3dfw_eyeocclusion" technique="pes3DFW_EyeOcclusion">
 		<Parameter textures="Base_Tex_SRGB"/>
     </FoxShader>
-	<FoxShader shader="fox_3ddf_ggx_nrmuv">
-		<Parameter technique="fox3DDF_GGX"/>
+	<FoxShader shader="fox_3ddf_ggx_nrmuv" technique="fox3DDF_GGX">
 		<Parameter textures="Base_Tex_SRGB"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="SpecularMap_Tex_LIN"/>
 		<Parameter textures="MetalnessMap_Tex_LIN"/>
 		<Parameter vector="MatParamIndex_0" xValue="18" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
-	<FoxShader shader="pes_3dfw_glass2">
-		<Parameter technique="pes3DFW_Glass2"/>
+	<FoxShader shader="pes_3dfw_glass2" technique="pes3DFW_Glass2">
 		<Parameter textures="Base_Tex_LIN"/>
 		<Parameter textures="NormalMap_Tex_NRM"/>
 		<Parameter textures="GlassReflection_Tex_SRGB"/>
@@ -174,24 +152,15 @@ These are some of the original shaders from KONAMI: https://pastebin.com/raw/Cpz
 		<Parameter vector="PCBoxCenter" xValue="0" yValue="15" zValue="0" wValue="1"/>
 		<Parameter vector="PCBoxSize" xValue="250" yValue="80" zValue="200" wValue="1"/>
     </FoxShader>
-	<FoxShader shader="pes_3dfw_const_srgb_bill">
-		<Parameter technique="pes3DFW_Constant_SRGB_Bill"/>
-		<Parameter textures="Base_Tex_SRGB_1"/>
-		<Parameter textures="Base_Tex_SRGB_2"/>
-		<Parameter textures="Led_Mask_Tex_LIN"/>
-		<Parameter vector="SelfColor" xValue="1" yValue="1" zValue="1" wValue="1"/>
-		<Parameter vector="SelfColorIntensity" xValue="50000" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="UvMatrix_0" xValue="1" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="UvMatrix_1" xValue="0" yValue="1" zValue="0" wValue="0"/>
-		<Parameter vector="UvMatrix_2" xValue="0" yValue="0" zValue="1" wValue="0"/>
-		<Parameter vector="UvMatrix_3" xValue="0" yValue="0" zValue="0" wValue="1"/>
-		<Parameter vector="DBG_Scale_Type" xValue="0" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="ScaleUParam" xValue="1" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="ScaleVParam" xValue="1" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="ScrollUParam" xValue="0" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="ScrollVParam" xValue="0" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="MaskRepeatParam" xValue="80" yValue="0" zValue="0" wValue="0"/>
-		<Parameter vector="FadeColor" xValue="1" yValue="1" zValue="1" wValue="1"/>
-		<Parameter vector="FadeValue" xValue="0" yValue="0" zValue="0" wValue="0"/>
+		<FoxShader shader="pes_3dfw_glass3" technique="pes3DFW_Glass3">
+		<Parameter textures="Base_Tex_LIN"/>
+		<Parameter textures="NormalMap_Tex_NRM"/>
+		<Parameter textures="GlassReflectionMask_Tex_LIN"/>
+		<Parameter vector="MatParamIndex_0" xValue="26" yValue="0" zValue="0" wValue="0"/>
+		<Parameter vector="ReflectionIntensity" xValue="4" yValue="0" zValue="0" wValue="0"/>
+		<Parameter vector="GlassRoughness" xValue="0.09" yValue="0" zValue="0" wValue="0"/>
+		<Parameter vector="GlassFlatness" xValue="0.45" yValue="0" zValue="0" wValue="0"/>
+		<Parameter vector="DesaturationStrength" xValue="0.85" yValue="0" zValue="0" wValue="0"/>
+		<Parameter vector="DesaturationAltitude" xValue="0.50" yValue="0" zValue="0" wValue="0"/>
     </FoxShader>
 </FoxShader>

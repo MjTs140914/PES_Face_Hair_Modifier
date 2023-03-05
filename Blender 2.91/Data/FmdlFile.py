@@ -1,4 +1,5 @@
 import math
+import struct
 from struct import pack, pack_into, unpack, unpack_from
 
 class InvalidFmdl(Exception):
@@ -562,8 +563,8 @@ class FmdlFile:
 				if assignments[i] != None:
 					raise InvalidFmdl("Invalid double mesh group assignment: mesh %d already assigned" % i)
 				assignments[i] = meshGroupID
-			if meshGroups[meshGroupID].boundingBox != None and meshGroups[meshGroupID].boundingBox != boundingBoxes[boundingBoxID]:
-				raise InvalidFmdl("Invalid double bounding box assignment for mesh group %d" % meshGroupID)
+			#if meshGroups[meshGroupID].boundingBox != None and meshGroups[meshGroupID].boundingBox != boundingBoxes[boundingBoxID]:
+				#raise InvalidFmdl("Invalid double bounding box assignment for mesh group %d" % meshGroupID)
 			meshGroups[meshGroupID].boundingBox = boundingBoxes[boundingBoxID]
 		
 		if None in assignments:
@@ -1639,7 +1640,7 @@ class FmdlFile:
 					(vertex.tangent.x, vertex.tangent.y, vertex.tangent.z, vertex.tangent.w)
 				))
 			if vertexFields.hasColor:
-				vertexEncoding.color = pack('< 4B', *(int(x * 255 + 0.5) for x in vertex.color[0:4]))
+				vertexEncoding.color = pack('< 4B', *(int(x * 255 + 0.5) for x in vertex.color))
 			for i in range(4):
 				if i < vertexFields.uvCount:
 					vertexEncoding.uv.append(pack('< 2H', *(FmdlFile.encodeFloat16(x) for x in
@@ -1658,10 +1659,6 @@ class FmdlFile:
 				orderedBones = sorted(vertex.boneMapping.items(), key = (lambda pair: (pair[1], pair[0].name)), reverse = True)
 				totalWeight = sum([weight for (boneIndex, weight) in orderedBones])
 				integralTotalWeight = int((totalWeight * 255) + 0.5)
-				
-				if len(orderedBones) > 4:
-					print("Vertex with more than 4 bones assigned")
-				
 				selectedBones = orderedBones[0:4]
 				selectedWeight = sum([weight for (boneIndex, weight) in selectedBones])
 				
@@ -1671,12 +1668,11 @@ class FmdlFile:
 				for i in range(len(selectedBones)):
 					(bone, weight) = selectedBones[i]
 					if i == len(selectedBones) - 1:
-						boneWeight = max(0, min(255, remainingIntegralWeight))
+						boneWeight = remainingIntegralWeight
 					elif remainingSelectedWeight <= 0:
 						boneWeight = 0
 					else:
 						boneWeight = int((weight / remainingSelectedWeight) * remainingIntegralWeight + 0.5)
-						boneWeight = max(0, min(255, boneWeight))
 						remainingIntegralWeight -= boneWeight
 						remainingSelectedWeight -= weight
 					

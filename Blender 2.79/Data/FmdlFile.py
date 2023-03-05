@@ -563,8 +563,8 @@ class FmdlFile:
 				if assignments[i] != None:
 					raise InvalidFmdl("Invalid double mesh group assignment: mesh %d already assigned" % i)
 				assignments[i] = meshGroupID
-			if meshGroups[meshGroupID].boundingBox != None and meshGroups[meshGroupID].boundingBox != boundingBoxes[boundingBoxID]:
-				raise InvalidFmdl("Invalid double bounding box assignment for mesh group %d" % meshGroupID)
+			#if meshGroups[meshGroupID].boundingBox != None and meshGroups[meshGroupID].boundingBox != boundingBoxes[boundingBoxID]:
+				#raise InvalidFmdl("Invalid double bounding box assignment for mesh group %d" % meshGroupID)
 			meshGroups[meshGroupID].boundingBox = boundingBoxes[boundingBoxID]
 		
 		if None in assignments:
@@ -1640,7 +1640,7 @@ class FmdlFile:
 					(vertex.tangent.x, vertex.tangent.y, vertex.tangent.z, vertex.tangent.w)
 				))
 			if vertexFields.hasColor:
-				vertexEncoding.color = pack('< 4B', *(int(x * 255 + 0.5) for x in vertex.color))
+				vertexEncoding.color = pack('< 5B', *(int(x * 255 + 0.5) for x in vertex.color))
 			for i in range(4):
 				if i < vertexFields.uvCount:
 					vertexEncoding.uv.append(pack('< 2H', *(FmdlFile.encodeFloat16(x) for x in

@@ -3,12 +3,12 @@ from mathutils import Vector, Matrix
 from bpy.types import Operator, AddonPreferences
 from bpy.props import FloatProperty, BoolProperty, EnumProperty, PointerProperty
 
-class FMDL_21_PT_TransferNormalsPanel(bpy.types.Panel):
-    bl_label = "Normals"
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = 'Tool'
+class FMDL_TransferNormalsPanel(bpy.types.Panel):
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "TOOLS"
     bl_context = "objectmode"
+    bl_category = "Tools"
+    bl_label = "Normals"
 
     def draw(self, context):
         panel = self.layout.column(align=True)
@@ -47,12 +47,12 @@ class FMDL_TransferNormals(bpy.types.Operator):
     bl_space_type = "VIEW_3D"
     bl_context = "objectmode"
     
-    to_active : bpy.props.BoolProperty(name="To Active", default = True, description="Transfer from selection to active object")
-    transfer_vcol : bpy.props.BoolProperty(name="Vertex Colors", default = True, description="Transfer vertex colors as well")
-    use_distance : bpy.props.BoolProperty(name="Use Max Distance", default = True, description="Use maximum distance")
-    max_distance : bpy.props.FloatProperty(name="Max Distance", default = 0.01, min = 0, max = 1000)
-    mix_factor : bpy.props.FloatProperty(name="Mix Factor", default = 1.0, min = 0, max = 1)
-    group : bpy.props.EnumProperty(name="Vertex Group", items=group_items, description="Vertex Group")
+    to_active = bpy.props.BoolProperty(name="To Active", default = True, description="Transfer from selection to active object")
+    transfer_vcol = bpy.props.BoolProperty(name="Vertex Colors", default = True, description="Transfer vertex colors as well")
+    use_distance = bpy.props.BoolProperty(name="Use Max Distance", default = True, description="Use maximum distance")
+    max_distance = bpy.props.FloatProperty(name="Max Distance", default = 0.01, min = 0, max = 1000)
+    mix_factor = bpy.props.FloatProperty(name="Mix Factor", default = 1.0, min = 0, max = 1)
+    group = bpy.props.EnumProperty(name="Vertex Group", items=group_items, description="Vertex Group")
 
     def draw(self, context):
         panel = self.layout.column()
@@ -112,7 +112,7 @@ class FMDL_TransferNormals(bpy.types.Operator):
                 source = ob     if self.to_active else active
                 
                 bpy.ops.object.select_all(action='DESELECT')
-                target.select_set(True)
+                target.select = True
                 bpy.ops.object.duplicate()
                 duplicate = bpy.context.selected_objects[0]
                 duplicate.modifiers.clear()
@@ -134,24 +134,24 @@ class FMDL_TransferNormals(bpy.types.Operator):
                 if self.to_active or len(selection) is 2:
                     transfer.vertex_group = self.group
                 
-                bpy.context.view_layer.objects.active = duplicate
-                bpy.ops.object.modifier_apply(modifier=transfer.name)
+                bpy.context.scene.objects.active = duplicate
+                bpy.ops.object.modifier_apply(apply_as='DATA', modifier=transfer.name)
                 ##### Replace data and remove duplicate         
                 duplicate.data.name = target.data.name
-                for ob in bpy.context.view_layer.objects:
+                for ob in bpy.context.scene.objects:
                     if ob.data == target.data and ob != target:
                         ob.data = duplicate.data
                 old_data = target.data
                 target.data = duplicate.data
                 bpy.ops.object.select_all(action='DESELECT')
-                duplicate.select_set(True)
+                duplicate.select = True
                 bpy.ops.object.delete()
                 bpy.data.meshes.remove(old_data)
 
         # Restore selection
         for ob in selection:
-            ob.select_set(True)
-        bpy.context.view_layer.objects.active = active
+            ob.select = True                            
+        bpy.context.scene.objects.active = active
         
         return {'FINISHED'}
     
@@ -163,14 +163,14 @@ class FMDL_WrapNormals(bpy.types.Operator):
     bl_space_type = "VIEW_3D"
     bl_context = "objectmode"
 
-    wrap_x : bpy.props.BoolProperty(name="X", default = True, description="Wrap normals along X-axis")
-    wrap_y : bpy.props.BoolProperty(name="Y", default = True, description="Wrap normals along Y-axis")
-    wrap_z : bpy.props.BoolProperty(name="Z", default = True, description="Wrap normals along Z-axis")
-    offset_x : bpy.props.FloatProperty(name="Offset", default = 1.0, min = 0, max = 1000)
-    offset_y : bpy.props.FloatProperty(name="Offset", default = 1.0, min = 0, max = 1000)
-    offset_z : bpy.props.FloatProperty(name="Offset", default = 1.0, min = 0, max = 1000)
-    group : bpy.props.EnumProperty(name="Vertex Group", items=group_items, description="Vertex Group")
-    transfer_vcol : bpy.props.BoolProperty(name="Vertex Colors", default = True, description="Wrap vertex colors as well")
+    wrap_x = bpy.props.BoolProperty(name="X", default = True, description="Wrap normals along X-axis")
+    wrap_y = bpy.props.BoolProperty(name="Y", default = True, description="Wrap normals along Y-axis")
+    wrap_z = bpy.props.BoolProperty(name="Z", default = True, description="Wrap normals along Z-axis")
+    offset_x = bpy.props.FloatProperty(name="Offset", default = 1.0, min = 0, max = 1000)
+    offset_y = bpy.props.FloatProperty(name="Offset", default = 1.0, min = 0, max = 1000)
+    offset_z = bpy.props.FloatProperty(name="Offset", default = 1.0, min = 0, max = 1000)
+    group = bpy.props.EnumProperty(name="Vertex Group", items=group_items, description="Vertex Group")
+    transfer_vcol = bpy.props.BoolProperty(name="Vertex Colors", default = True, description="Wrap vertex colors as well")
     
     def draw(self, context):
 
@@ -219,7 +219,7 @@ class FMDL_WrapNormals(bpy.types.Operator):
         selection = bpy.context.selected_objects
         ## Duplicate active object to have single-user data
         bpy.ops.object.select_all(action='DESELECT')
-        active.select_set(True)
+        active.select = True
         bpy.ops.object.duplicate()
         target = bpy.context.selected_objects[0]
         target.modifiers.clear()
@@ -239,7 +239,7 @@ class FMDL_WrapNormals(bpy.types.Operator):
             axes.append('Z')
             offset[2] -= self.offset_z
 
-        offset = active.matrix_world.to_3x3() @ offset
+        offset = active.matrix_world.to_3x3() * offset
         source.location = source.location + offset
         for axis in axes:
             array = source.modifiers.new(axis, 'ARRAY')
@@ -254,13 +254,13 @@ class FMDL_WrapNormals(bpy.types.Operator):
                 self.offset_z if axis is 'Z' else 0
             ]
         while len(source.modifiers):    
-            bpy.ops.object.modifier_apply(modifier=source.modifiers[0].name)
+            bpy.ops.object.modifier_apply(apply_as='DATA', modifier=source.modifiers[0].name)
             
         ## Transfer normals
         bpy.ops.object.select_all(action='DESELECT')
-        source.select_set(True)
-        target.select_set(True)
-        bpy.context.view_layer.objects.active = target
+        source.select = True
+        target.select = True
+        bpy.context.scene.objects.active = target
         bpy.ops.object.transfer_normals(
             to_active = True,
             use_distance = True,
@@ -271,7 +271,7 @@ class FMDL_WrapNormals(bpy.types.Operator):
         
         ## Replace data
         target.data.name = active.data.name
-        for ob in bpy.context.view_layer.objects:
+        for ob in bpy.context.scene.objects:
             if ob.data == active.data and ob != active:
                 ob.data = target.data
         old_data = active.data
@@ -281,8 +281,8 @@ class FMDL_WrapNormals(bpy.types.Operator):
         bpy.ops.object.delete()
         bpy.data.meshes.remove(old_data)
         for ob in selection:
-            ob.select_set(True)
-        bpy.context.view_layer.objects.active = active
+            ob.select = True
+        bpy.context.scene.objects.active = active
         
         return {'FINISHED'}
 
@@ -300,8 +300,12 @@ class FMDL_ClearNormals(bpy.types.Operator):
         
         for ob in bpy.context.selected_objects:
             if ob.type == "MESH":
-                bpy.context.view_layer.objects.active = ob
+                bpy.context.scene.objects.active = ob
                 bpy.ops.mesh.customdata_custom_splitnormals_clear()
 
-        bpy.context.view_layer.objects.active = active
+        bpy.context.scene.objects.active = active
         return {'FINISHED'}
+
+                    
+addon_keymaps = []
+tina_to_active = False

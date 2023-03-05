@@ -119,7 +119,7 @@ for (name, position) in [
 	('end_dsk_hem_o_r', (-0.21311883809893684, 0.715447856071665, 0.06694865381294339)),
 	('tip_dsk_toe_l', (0.2050963044166565, 0.021185649558901787, 0.22606439888477325)),
 	('tip_dsk_toe_r', (-0.20509639382362366, 0.02118542045354843, 0.22606439888477325)),
-
+	
 	('skh_thumb_mata_l', (0.6146655678749084, 1.054546594619751, 0.08812183141708374)),
 	('skh_thumb_mcp_l', (0.62691730260849, 1.0178487300872803, 0.127588152885437)),
 	('skh_thumb_pip_l', (0.6419606804847717, 1.0002193450927734, 0.14715994894504547)),
@@ -144,7 +144,7 @@ for (name, position) in [
 	('skh_pinky_pip_l', (0.672210693359375, 0.9831706285476685, 0.021199574694037437)),
 	('skh_pinky_dip_l', (0.6825976371765137, 0.9678400754928589, 0.014338493347167969)),
 	('end_skh_pinky_dip_l', (0.6895405532339339, 0.957604652903316, 0.009774147561992446)),
-
+	
 	('skh_thumb_mata_r', (-0.6146743893623352, 1.054556131362915, 0.08812440931797028)),
 	('skh_thumb_mcp_r', (-0.6269280314445496, 1.0178595781326294, 0.12758910655975342)),
 	('skh_thumb_pip_r', (-0.6419716477394104, 1.0002305507659912, 0.14716090261936188)),
@@ -169,7 +169,7 @@ for (name, position) in [
 	('skh_pinky_pip_r', (-0.6722195148468018, 0.9831812977790833, 0.021201662719249725)),
 	('skh_pinky_dip_r', (-0.6826071739196777, 0.9678511023521423, 0.014340905472636223)),
 	('end_skh_pinky_dip_r', (-0.6895537134752939, 0.9576106762192209, 0.009774294419508178)),
-
+	
 	('dsk_hair', (-0.0, 1.5160000324249268, -0.07099999487400055)),
 	('skf_jaw', (-9.999999974752427e-07, 1.636909008026123, 0.07954826205968857)),
 	('end_skf_jaw', (-9.999999974752427e-07, 1.5718496457120543, 0.12929951959647407)),
@@ -234,7 +234,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('dsk_pectoralis_r', None, 'sk_shoulder_r', 'dsk_pectoralis_r', 'end_dsk_pectoralis_r'),
 	('dsk_scapula_r', None, 'sk_shoulder_r', 'dsk_scapula_r', 'end_dsk_scapula_r'),
 	('dsk_trapezius_r', None, 'sk_shoulder_r', 'dsk_trapezius_r', 'end_dsk_trapezius_r'),
-
+	
 	('sk_upperarm_l', 'sk_shoulder_l', 'sk_shoulder_l', 'sk_upperarm_l', 'sk_forearm_l'),
 	('dsk_upperarm_l', None, 'sk_upperarm_l', 'sk_upperarm_l', 'sk_forearm_l'),
 	('dsk_upperarm_long_l', None, 'dsk_upperarm_l', 'sk_upperarm_l', 'sk_forearm_l'),
@@ -246,7 +246,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('dsk_forearm_l', None, 'dsk_forearm_t_l', 'dsk_forearm_l', 'sk_hand_l'),
 	('sk_hand_l', 'sk_forearm_l', 'sk_forearm_l', 'sk_hand_l', 'end_sk_hand_l'),
 	('dsk_wrist_l', None, 'sk_hand_l', 'sk_hand_l', 'end_dsk_wrist_l'),
-
+	
 	('sk_upperarm_r', 'sk_shoulder_r', 'sk_shoulder_r', 'sk_upperarm_r', 'sk_forearm_r'),
 	('dsk_upperarm_r', None, 'sk_upperarm_r', 'sk_upperarm_r', 'sk_forearm_r'),
 	('dsk_upperarm_long_r', None, 'dsk_upperarm_r', 'sk_upperarm_r', 'sk_forearm_r'),
@@ -258,7 +258,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('dsk_forearm_r', None, 'dsk_forearm_t_r', 'dsk_forearm_r', 'sk_hand_r'),
 	('sk_hand_r', 'sk_forearm_r', 'sk_forearm_r', 'sk_hand_r', 'end_sk_hand_r'),
 	('dsk_wrist_r', None, 'sk_hand_r', 'sk_hand_r', 'end_dsk_wrist_r'),
-
+	
 	('sk_thigh_l', 'dsk_hip', 'dsk_hip', 'sk_thigh_l', 'sk_leg_l'),
 	('dsk_hip_l', None, 'dsk_thigh_l', 'dsk_hip', 'sk_thigh_l'),
 	('dsk_thigh_l', None, 'sk_thigh_l', 'dsk_thigh_l', 'end_dsk_thigh_l'),
@@ -268,7 +268,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('sk_foot_l', 'sk_leg_l', 'sk_leg_l', 'sk_foot_l', 'dsk_toe_l'),
 	('dsk_foot_l', None, 'sk_foot_l', 'sk_foot_l', 'dsk_toe_l'),
 	('dsk_toe_l', None, 'sk_foot_l', 'dsk_toe_l', 'tip_dsk_toe_l'),
-
+	
 	('sk_thigh_r', 'dsk_hip', 'dsk_hip', 'sk_thigh_r', 'sk_leg_r'),
 	('dsk_hip_r', None, 'dsk_thigh_r', 'dsk_hip', 'sk_thigh_r'),
 	('dsk_thigh_r', None, 'sk_thigh_r', 'dsk_thigh_r', 'end_dsk_thigh_r'),
@@ -278,7 +278,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('sk_foot_r', 'sk_leg_r', 'sk_leg_r', 'sk_foot_r', 'dsk_toe_r'),
 	('dsk_foot_r', None, 'sk_foot_r', 'sk_foot_r', 'dsk_toe_r'),
 	('dsk_toe_r', None, 'sk_foot_r', 'dsk_toe_r', 'tip_dsk_toe_r'),
-
+	
 	('dsk_belly_scale', None, 'sk_belly', 'dsk_belly_scale', 'end_dsk_belly_scale'),
 	('dsk_belly_ba_l', None, 'dsk_belly_scale', 'dsk_belly_ba_l', 'dsk_hem_ba_l'),
 	('dsk_belly_ba_r', None, 'dsk_belly_scale', 'dsk_belly_ba_r', 'dsk_hem_ba_r'),
@@ -288,7 +288,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('dsk_belly_o_r', None, 'dsk_belly_scale', 'dsk_belly_o_r', 'dsk_hem_o_r'),
 	('dsk_collar_l', None, 'sk_neck', 'dsk_collar_l', 'end_dsk_collar_l'),
 	('dsk_collar_r', None, 'sk_neck', 'dsk_collar_r', 'end_dsk_collar_r'),
-
+	
 	('dsk_hem_l', None, 'dsk_belly_scale', 'dsk_hem_l', 'end_dsk_hem_l'),
 	('dsk_hem_r', None, 'dsk_belly_scale', 'dsk_hem_r', 'end_dsk_hem_r'),
 	('dsk_hem_ba_l', None, 'dsk_hem_l', 'dsk_hem_ba_l', 'end_dsk_hem_ba_l'),
@@ -301,7 +301,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('dsk_hem_o_r', None, 'dsk_hem_r', 'dsk_hem_o_r', 'end_dsk_hem_o_r'),
 	('dsk_pants_l', None, 'dsk_belly_scale', 'dsk_pants_l', 'end_dsk_pants_l'),
 	('dsk_pants_r', None, 'dsk_belly_scale', 'dsk_pants_r', 'end_dsk_pants_r'),
-
+	
 	('skh_thumb_mata_l', None, 'sk_hand_l', 'skh_thumb_mata_l', 'skh_thumb_mcp_l'),
 	('skh_thumb_mcp_l', 'skh_thumb_mata_l', 'skh_thumb_mata_l', 'skh_thumb_mcp_l', 'skh_thumb_pip_l'),
 	('skh_thumb_pip_l', 'skh_thumb_mcp_l', 'skh_thumb_mcp_l', 'skh_thumb_pip_l', 'end_skh_thumb_pip_l'),
@@ -321,7 +321,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('skh_pinky_mcp_l', 'skh_pinky_mata_l', 'skh_pinky_mata_l', 'skh_pinky_mcp_l', 'skh_pinky_pip_l'),
 	('skh_pinky_pip_l', 'skh_pinky_mcp_l', 'skh_pinky_mcp_l', 'skh_pinky_pip_l', 'skh_pinky_dip_l'),
 	('skh_pinky_dip_l', 'skh_pinky_pip_l', 'skh_pinky_pip_l', 'skh_pinky_dip_l', 'end_skh_pinky_dip_l'),
-
+	
 	('skh_thumb_mata_r', None, 'sk_hand_r', 'skh_thumb_mata_r', 'skh_thumb_mcp_r'),
 	('skh_thumb_mcp_r', 'skh_thumb_mata_r', 'skh_thumb_mata_r', 'skh_thumb_mcp_r', 'skh_thumb_pip_r'),
 	('skh_thumb_pip_r', 'skh_thumb_mcp_r', 'skh_thumb_mcp_r', 'skh_thumb_pip_r', 'end_skh_thumb_pip_r'),
@@ -341,7 +341,7 @@ for (name, sklParent, renderParent, startPosition, endPosition) in [
 	('skh_pinky_mcp_r', 'skh_pinky_mata_r', 'skh_pinky_mata_r', 'skh_pinky_mcp_r', 'skh_pinky_pip_r'),
 	('skh_pinky_pip_r', 'skh_pinky_mcp_r', 'skh_pinky_mcp_r', 'skh_pinky_pip_r', 'skh_pinky_dip_r'),
 	('skh_pinky_dip_r', 'skh_pinky_pip_r', 'skh_pinky_pip_r', 'skh_pinky_dip_r', 'end_skh_pinky_dip_r'),
-
+	
 	('dsk_hair', None, 'sk_head', 'sk_head', 'dsk_hair'),
 	('skf_jaw', None, 'sk_head', 'skf_jaw', 'end_skf_jaw'),
 	('dsk_earlobe_l', 'dsk_ear_b_l', 'dsk_ear_b_l', 'dsk_ear_b_l', 'dsk_earlobe_l'),
@@ -605,45 +605,4 @@ skeletonBones['PES2019']['body'] += [
 	'dsk_leg_r',
 	'dsk_pants_l',
 	'dsk_pants_r',
-]
-skeletonBones['PES2020'] = {}
-skeletonBones['PES2020']['face'] = [
-	'sk_chest',
-	'sk_neck',
-	'sk_head',
-	'skf_jaw',
-	'skf_cheek_l',
-	'skf_cheek_r',
-	'skf_cheek_s_l',
-	'skf_cheek_s_r',
-	'skf_lip_volume',
-	'skf_lip_t_l',
-	'skf_lip_t_c',
-	'skf_lip_t_r',
-	'skf_lip_s_l',
-	'skf_lip_s_r',
-	'skf_lip_b_l',
-	'skf_lip_b_r',
-	'skf_lip_b_c',
-	'skf_doublechin',
-	'skf_glabella',
-	'skf_brow_o_l',
-	'skf_brow_i_l',
-	'skf_brow_i_r',
-	'skf_brow_o_r',
-	'skf_eyelid_t_l',
-	'skf_eyelid_b_l',
-	'skf_eyelid_b_r',
-	'skf_eyelid_t_r',
-	'skf_orbicularisoculi_b_r',
-	'skf_orbicularisoculi_b_l',
-	'skf_nose',
-	'skf_nosewing_l',
-	'skf_nosewing_r',
-	'skf_nasolabialfold_t_l',
-	'skf_nasolabialfold_t_r',
-	'dsk_neckback',
-	'dsk_scm',
-	'dsk_clavicle_l',
-	'dsk_clavicle_r'
 ]

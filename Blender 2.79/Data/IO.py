@@ -4,8 +4,12 @@ import itertools
 import os
 import os.path
 import re
+from mathutils import Vector
+import random
+import bmesh
 
-from . import FmdlFile, FmdlMeshSplitting, FmdlSplitVertexEncoding, Ftex, PesSkeletonData
+from . import FmdlFile, FmdlMeshSplitting, FmdlSplitVertexEncoding, Ftex, PesSkeletonData, PesNodes
+from collections import defaultdict
 
 
 class UnsupportedFmdl(Exception):
@@ -61,8 +65,8 @@ def createBoundingBox(context, meshObject, min, max):
 	
 	blenderLatticeObject = bpy.data.objects.new(name, blenderLattice)
 	blenderLatticeObject.parent = bpy.data.objects[objectID]
-	context.scene.objects.link(blenderLatticeObject)
-	context.scene.update()
+	bpy.context.collection.objects.link(blenderLatticeObject)
+	bpy.context.collection.objects.update()
 
 def createFittingBoundingBox(context, meshObject):
 	transformedMesh = meshObject.data.copy()
@@ -76,15 +80,13 @@ def createFittingBoundingBox(context, meshObject):
 	
 	createBoundingBox(context, meshObject, minCoordinates, maxCoordinates)
 
+
 def importFmdl(context, fmdl, filename, importSettings = None):
 	UV_MAP_COLOR = 'UVMap'
 	UV_MAP_NORMALS = 'normal_map'
-	scn = bpy.context.scene
-	facepath = scn.face_path
 	def findTexture(texture, textureSearchPath):
 		textureFilename = texture.directory.replace('\\', '/').rstrip('/') + '/' + texture.filename.replace('\\', '/').lstrip('/')
 		textureFilenameComponents = tuple(filter(None, textureFilename.split('/')))
-
 		if len(textureFilenameComponents) == 0:
 			return None
 		filename = textureFilenameComponents[-1]
@@ -111,7 +113,6 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 				
 				if len(filenames) == 0:
 					directory = os.path.join(searchDirectory, *suffix)
-					
 					if not os.path.isdir(directory):
 						continue
 					
@@ -123,33 +124,29 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 						if re.match('^u[0-9]{4}p1\.dds$', entry, flags = re.IGNORECASE):
 							fullFilename = os.path.join(directory, entry)
 							if os.path.isfile(fullFilename):
-								print(entry)
 								return fullFilename
 		
 		return None
-
-	def addTexture(blenderMaterial, textureRole, texture, textureIDs, uvMapColor, uvMapNormals, textureSearchPath,
-				   loadTextures):
+	
+	def addTexture(blenderMaterial, textureRole, texture, textureIDs, uvMapColor, uvMapNormals, textureSearchPath, loadTextures):
 		identifier = (textureRole, texture)
-		dds_texture_face_path = facepath[:-29] + "/sourceimages/#windx11/" + texture.filename
-		dds_texture_face_path = dds_texture_face_path.replace('/', '\\')
 		if identifier in textureIDs:
 			blenderTexture = bpy.data.textures[textureIDs[identifier]]
 		else:
-			blenderImage = bpy.data.images.new(texture.filename, width=0, height=0)
+			blenderImage = bpy.data.images.new(texture.filename, width = 0, height = 0)
 			blenderImage.source = 'FILE'
-
+			
 			if '_SRGB' in textureRole:
 				blenderImage.colorspace_settings.name = 'sRGB'
 			elif '_LIN' in textureRole:
 				blenderImage.colorspace_settings.name = 'Linear'
 			else:
 				blenderImage.colorspace_settings.name = 'Non-Color'
-
+			
 			if loadTextures:
 				filename = findTexture(texture, textureSearchPath)
 				if filename == None:
-					blenderImage.filepath = dds_texture_face_path
+					blenderImage.filepath = texture.directory + texture.filename
 				elif filename.lower().endswith('.ftex'):
 					blenderImage.filepath = filename
 					Ftex.blenderImageLoadFtex(blenderImage, bpy.app.tempdir)
@@ -158,15 +155,15 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 					blenderImage.reload()
 			
 			textureName = "[%s] %s" % (textureRole, texture.filename)
-			blenderTexture = bpy.data.textures.new(textureName, type='IMAGE')
+			blenderTexture = bpy.data.textures.new(textureName, type = 'IMAGE')
 			blenderTexture.image = blenderImage
 			blenderTexture.use_alpha = True
-
+			
 			if '_NRM' in textureRole:
 				blenderTexture.use_normal_map = True
-
+			
 			textureIDs[identifier] = blenderTexture.name
-
+		
 		blenderTextureSlot = blenderMaterial.texture_slots.add()
 		blenderTextureSlot.texture = blenderTexture
 		blenderTextureSlot.texture_coords = 'UV'
@@ -174,14 +171,14 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 			blenderTextureSlot.uv_layer = uvMapNormals
 		else:
 			blenderTextureSlot.uv_layer = uvMapColor
-
+		
 		if textureRole == 'Base_Tex_SRGB' or textureRole == 'Base_Tex_LIN':
 			blenderTextureSlot.use_map_diffuse = True
 			blenderTextureSlot.use_map_color_diffuse = True
 			blenderTextureSlot.use = True
 		else:
 			blenderTextureSlot.use = False
-
+		
 		blenderTexture.fmdl_texture_filename = texture.filename
 		blenderTexture.fmdl_texture_directory = texture.directory
 		blenderTexture.fmdl_texture_role = textureRole
@@ -192,6 +189,7 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 				if mesh.vertexFields.uvCount >= 1 and 1 not in mesh.vertexFields.uvEqualities[0]:
 					return True
 		return False
+
 	
 	def importMaterials(fmdl, textureSearchPath, loadTextures):
 		materialIDs = {}
@@ -215,10 +213,8 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 			else:
 				uvMapNormals = UV_MAP_COLOR
 			
-			blenderMaterial.emit = 1.0
-			
 			for (role, texture) in materialInstance.textures:
-				addTexture(blenderMaterial, role, texture, textureIDs, uvMapColor, uvMapNormals, textureSearchPath, loadTextures)
+				PesNodes.addTexture(context, blenderMaterial, role, texture, textureIDs, uvMapColor, uvMapNormals, textureSearchPath, loadTextures)
 		
 		return materialIDs
 	
@@ -266,7 +262,6 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 		if parentBoneID != None:
 			blenderEditBone.parent = blenderArmature.edit_bones[parentBoneID]
 			blenderEditBone.use_connect = useConnect
-		
 		return boneID
 	
 	def importSkeleton(context, fmdl):
@@ -277,8 +272,8 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 		blenderArmatureObject = bpy.data.objects.new(sklname, blenderArmature)
 		armatureObjectID = blenderArmatureObject.name
 		
-		context.scene.objects.link(blenderArmatureObject)
-		context.scene.objects.active = blenderArmatureObject
+		bpy.context.collection.objects.link(blenderArmatureObject)
+		bpy.context.view_layer.objects.active = blenderArmatureObject
 		
 		bpy.ops.object.mode_set(context.copy(), mode = 'EDIT')
 		
@@ -289,9 +284,9 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 		boneIDs = {}
 		for bone in fmdl.bones:
 			addBone(blenderArmature, bone, boneIDs, bonesByName)
-		
+
 		bpy.ops.object.mode_set(context.copy(), mode = 'OBJECT')
-		bpy.data.objects[armatureObjectID].hide = True
+		bpy.data.objects[armatureObjectID].hide_viewport = True
 		return (armatureObjectID, boneIDs)
 	
 	def addSkeletonMeshModifier(blenderMeshObject, boneGroup, armatureObjectID, boneIDs):
@@ -305,27 +300,18 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 		vertexGroupIDs = {}
 		for bone in boneGroup.bones:
 			blenderBone = blenderArmature.bones[boneIDs[bone]]
-			blenderVertexGroup = blenderMeshObject.vertex_groups.new(blenderBone.name)
+			blenderVertexGroup = blenderMeshObject.vertex_groups.new(name=blenderBone.name)
 			vertexGroupIDs[bone] = blenderVertexGroup.name
 		return vertexGroupIDs
 	
 	def findUvMapImage(blenderMaterial, uvMapName, rolePrefix):
 		options = []
-		for slot in blenderMaterial.texture_slots:
-			if slot is None:
-				continue
-			if slot.uv_layer != uvMapName:
-				continue
-			if (
-				    slot.texture is not None
-				and slot.texture.type == 'IMAGE'
-				and slot.texture.image is not None
-				and slot.texture.image.size[0] != 0
-			):
-				image = slot.texture.image
+		for slot in blenderMaterial.node_tree.nodes:
+			if slot.type == 'TEX_IMAGE':
+				image = slot.image
+				options.append((image, slot.fmdl_texture_role))
 			else:
 				image = None
-			options.append((image, slot.texture.fmdl_texture_role))
 		
 		for (image, role) in options:
 			if role.lower().startswith(rolePrefix.lower()):
@@ -381,16 +367,16 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 			blenderMesh.use_auto_smooth = True
 		
 		if mesh.vertexFields.hasColor:
-			colorLayer = blenderMesh.vertex_colors.new('Edit')
-			colorLayer = blenderMesh.vertex_colors.new('Anim')
+			colorLayer = blenderMesh.vertex_colors.new(name='Edit')
+			colorLayer = blenderMesh.vertex_colors.new(name='Anim')
 			colorLayer.data.foreach_set("color", tuple(itertools.chain.from_iterable([
-				vertex.color[0:3] for vertex in loopVertices
+				vertex.color[0:4] for vertex in loopVertices
 			])))
 			colorLayer.active = False
 			colorLayer.active_render = False
 		
 		if mesh.vertexFields.uvCount >= 1:
-			uvTexture = blenderMesh.uv_textures.new(name = UV_MAP_COLOR)
+			uvTexture = blenderMesh.uv_layers.new(name = UV_MAP_COLOR)
 			uvLayer = blenderMesh.uv_layers[uvTexture.name]
 			
 			uvLayer.data.foreach_set("uv", tuple(itertools.chain.from_iterable([
@@ -399,25 +385,15 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 			uvTexture.active = True
 			uvTexture.active_clone = True
 			uvTexture.active_render = True
-			
-			image = findUvMapImage(blenderMaterial, UV_MAP_COLOR, 'Base_Tex_')
-			if image is not None:
-				for i in range(len(uvTexture.data)):
-					uvTexture.data[i].image = image
 		
 		if mesh.vertexFields.uvCount >= 2 and 0 not in mesh.vertexFields.uvEqualities[1]:
-			uvTexture = blenderMesh.uv_textures.new(name = UV_MAP_NORMALS)
+			uvTexture = blenderMesh.uv_layers.new(name = UV_MAP_NORMALS)
 			uvLayer = blenderMesh.uv_layers[uvTexture.name]
 			
 			uvLayer.data.foreach_set("uv", tuple(itertools.chain.from_iterable([
 				(vertex.uv[1].u, 1.0 - vertex.uv[1].v) for vertex in loopVertices
 			])))
 			
-			image = findUvMapImage(blenderMaterial, UV_MAP_NORMALS, 'NormalMap_Tex_')
-			if image is not None:
-				for i in range(len(uvTexture.data)):
-					uvTexture.data[i].image = image
-		
 		if mesh.vertexFields.uvCount >= 3:
 			raise UnsupportedFmdl("No support for fmdl files with more than 2 UV maps")
 		
@@ -428,7 +404,7 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 		
 		blenderMeshObject = bpy.data.objects.new(blenderMesh.name, blenderMesh)
 		meshObjectID = blenderMeshObject.name
-		context.scene.objects.link(blenderMeshObject)
+		bpy.context.collection.objects.link(blenderMeshObject)
 		
 		if mesh.vertexFields.hasBoneMapping:
 			vertexGroupIDs = addSkeletonMeshModifier(blenderMeshObject, mesh.boneGroup, armatureObjectID, boneIDs)
@@ -464,7 +440,7 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 			blenderMeshGroupObject = bpy.data.objects[meshObjectIDs[meshGroup.meshes[0]]]
 		else:
 			blenderMeshGroupObject = bpy.data.objects.new(meshGroup.name, None)
-			context.scene.objects.link(blenderMeshGroupObject)
+			bpy.context.collection.objects.link(blenderMeshGroupObject)
 			
 			for mesh in meshGroup.meshes:
 				bpy.data.objects[meshObjectIDs[mesh]].parent = blenderMeshGroupObject
@@ -585,14 +561,22 @@ def importFmdl(context, fmdl, filename, importSettings = None):
 	return bpy.data.objects[rootMeshGroupID]
 
 
-def exportFmdl(context, rootObjectName, exportSettings = None):
+def exportFmdl(context, rootObjectName, exportSettings=None):
+	
+	def iterateTextureSlots(blenderMaterial):
+		if blenderMaterial.node_tree is not None:
+			for slot in blenderMaterial.node_tree.nodes:
+				if slot is None or slot.type != "TEX_IMAGE":
+					continue
+				yield slot
+		else:
+			return None
+
 	def exportMaterial(blenderMaterial, textureFmdlObjects):
+		
 		materialInstance = FmdlFile.FmdlFile.MaterialInstance()
 		
-		for slot in blenderMaterial.texture_slots:
-			if slot == None:
-				continue
-			blenderTexture = slot.texture
+		for blenderTexture in iterateTextureSlots(blenderMaterial):
 			if blenderTexture not in textureFmdlObjects:
 				texture = FmdlFile.FmdlFile.Texture()
 				texture.filename = blenderTexture.fmdl_texture_filename
@@ -704,6 +688,7 @@ def exportFmdl(context, rootObjectName, exportSettings = None):
 		
 		return (orderedBones, bonesByName)
 	
+	
 	def exportMeshGeometry(blenderMeshObject, colorLayer, uvLayerColor, uvLayerNormal, boneVector, scene):
 		#
 		# Setup a modified version of the mesh data that can be fiddled with.
@@ -717,26 +702,25 @@ def exportFmdl(context, rootObjectName, exportSettings = None):
 		
 		loopTotals = [0 for i in range(len(modifiedBlenderMesh.polygons))]
 		modifiedBlenderMesh.polygons.foreach_get("loop_total", loopTotals)
+
 		if max(loopTotals) != 3:
 			#
 			# calc_tangents() only works on triangulated meshes
 			#
 			
-			modifiedBlenderObject = bpy.data.objects.new('triangulation', modifiedBlenderMesh)
-			modifiedBlenderObject.modifiers.new('triangulation', 'TRIANGULATE')
-			newBlenderMesh = modifiedBlenderObject.to_mesh(scene, True, 'PREVIEW', calc_undeformed = True)
-			bpy.data.objects.remove(modifiedBlenderObject)
-			bpy.data.meshes.remove(modifiedBlenderMesh)
-			modifiedBlenderMesh = newBlenderMesh
+			blenderBmesh = bmesh.new()
+			blenderBmesh.from_mesh(modifiedBlenderMesh, face_normals=False)
+			bmesh.ops.triangulate(blenderBmesh, faces=blenderBmesh.faces[:], quad_method='BEAUTY', ngon_method='BEAUTY')
+			blenderBmesh.to_mesh(modifiedBlenderMesh)
+			blenderBmesh.free()
 		
 		modifiedBlenderMesh.use_auto_smooth = True
+		modifiedBlenderMesh.calc_tangents(uvmap=uvLayerColor)
 		if uvLayerNormal is None:
 			uvLayerTangent = uvLayerColor
 		else:
 			uvLayerTangent = uvLayerNormal
-		modifiedBlenderMesh.calc_tangents(uvLayerTangent)
-		
-		
+		modifiedBlenderMesh.calc_tangents(uvmap=uvLayerTangent)
 		
 		class Vertex:
 			def __init__(self):
@@ -889,6 +873,38 @@ def exportFmdl(context, rootObjectName, exportSettings = None):
 		
 		bpy.data.meshes.remove(modifiedBlenderMesh)
 		return (fmdlVertices, fmdlFaces)
+
+	def ExportUVMaps(blenderMaterial, blenderMesh, name, vertexFields):
+		colorUvMaps = defaultdict(int)
+		normalUvMaps = defaultdict(int)
+		for uv in blenderMesh.uv_layers:
+			if uv.name == 'UVMap':
+				colorUvMaps[uv.name] = 1
+			else:
+				normalUvMaps[uv.name] = 1
+				
+		if len(normalUvMaps) == 0:
+			normalUvMaps = colorUvMaps
+
+		if len(colorUvMaps) == 0:
+			raise FmdlExportError("Mesh '%s' does not have a primary UV map set." % name)
+		if len(colorUvMaps) > 1:
+			raise FmdlExportError(
+				f"Mesh '{name}' has more than one primary UV maps: {colorUvMaps}")
+		if len(normalUvMaps) == 0:
+			raise FmdlExportError("Mesh '%s' does not have a normals UV map set." % name)
+		if len(normalUvMaps) > 1:
+			raise FmdlExportError(f"Mesh '{name}' has more than one normals UV map set: {normalUvMaps}")
+		
+		uvLayerColor = [*colorUvMaps][0]
+		uvLayerNormal = [*normalUvMaps][0]
+		vertexFields.uvCount = 1
+		
+		if uvLayerNormal == uvLayerColor:
+			uvLayerNormal = None
+		else:
+			vertexFields.uvCount += 1
+		return uvLayerColor, uvLayerNormal
 	
 	def exportMesh(blenderMeshObject, materialFmdlObjects, bonesByName, scene):
 		blenderMesh = blenderMeshObject.data
@@ -897,7 +913,7 @@ def exportFmdl(context, rootObjectName, exportSettings = None):
 		vertexFields = FmdlFile.FmdlFile.VertexFields()
 		vertexFields.hasNormal = True
 		vertexFields.hasTangent = True
-
+		
 		if len(blenderMesh.vertex_colors) == 0:
 			colorLayer = None
 			vertexFields.hasColor = False
@@ -914,64 +930,19 @@ def exportFmdl(context, rootObjectName, exportSettings = None):
 		if len(materials) == 0:
 			raise FmdlExportError("Mesh '%s' does not have an associated material." % name)
 		if len(materials) > 1:
-			raise FmdlExportError("Mesh '%s' has multiple associated materials, including '%s' and '%s'." % (name, materials[0].name, materials[1].name))
+			raise FmdlExportError("Mesh '%s' has multiple associated materials, including '%s' and '%s'." % (
+			name, materials[0].name, materials[1].name))
 		blenderMaterial = materials[0]
 		
-		if len(blenderMesh.uv_layers) == 0:
-			raise FmdlExportError("Mesh '%s' does not have a UV map." % name)
-		elif len(blenderMesh.uv_layers) == 1:
-			uvLayerColor = blenderMesh.uv_layers[0].name
-			uvLayerNormal = None
-			vertexFields.uvCount = 1
-		else:
-			colorUvMaps = []
-			normalUvMaps = []
-			for slot in blenderMaterial.texture_slots:
-				if slot == None:
-					continue
-				uvLayerName = slot.uv_layer
-				if uvLayerName not in blenderMesh.uv_layers:
-					continue
-				if '_NRM' in slot.texture.fmdl_texture_role:
-					uvMaps = normalUvMaps
-				else:
-					uvMaps = colorUvMaps
-				if uvLayerName not in uvMaps:
-					uvMaps.append(uvLayerName)
-			
-			if len(colorUvMaps) > 1:
-				raise FmdlExportError("Mesh '%s' has ambiguous UV maps: multiple UV maps configured as primary UV map." % name)
-			if len(normalUvMaps) > 1:
-				raise FmdlExportError("Mesh '%s' has ambiguous UV maps: multiple UV maps configured as normals UV map." % name)
-			
-			if len(colorUvMaps) == 0 and 'UVMap' in blenderMesh.uv_layers and 'UVMap' not in normalUvMaps:
-				colorUvMaps.append('UVMap')
-			if len(normalUvMaps) == 0 and 'normal_map' in blenderMesh.uv_layers and 'normal_map' not in colorUvMaps:
-				normalUvMaps.append('normal_map')
-			if len(colorUvMaps) == 0 and len(normalUvMaps) == 1 and len(blenderMesh.uv_layers) == 2:
-				for layer in blenderMesh.uv_layers:
-					if layer.name != normalUvMaps[0]:
-						colorUvMaps.append(layer.name)
-						break
-			
-			if len(colorUvMaps) == 0:
-				raise FmdlExportError("Mesh '%s' has ambiguous UV maps: found %s UV maps, but no primary UV map is configured." % (name, len(blenderMesh.uv_layers)))
-			if len(normalUvMaps) == 0:
-				raise FmdlExportError("Mesh '%s' has ambiguous UV maps: found %s UV maps, but no normals UV map is configured." % (name, len(blenderMesh.uv_layers)))
-			
-			uvLayerColor = colorUvMaps[0]
-			if colorUvMaps[0] == normalUvMaps[0]:
-				uvLayerNormal = None
-				vertexFields.uvCount = 1
-			else:
-				uvLayerNormal = normalUvMaps[0]
-				vertexFields.uvCount = 2
+		vertexFields.uvCount = 0
+		(uvLayerColor, uvLayerNormal) = ExportUVMaps(blenderMaterial, blenderMesh, name, vertexFields)
 		
 		boneVector = [bonesByName[vertexGroup.name] for vertexGroup in blenderMeshObject.vertex_groups]
 		if len(boneVector) > 0:
 			vertexFields.hasBoneMapping = True
 		
-		(vertices, faces) = exportMeshGeometry(blenderMeshObject, colorLayer, uvLayerColor, uvLayerNormal, boneVector, scene)
+		(vertices, faces) = exportMeshGeometry(blenderMeshObject, colorLayer, uvLayerColor, uvLayerNormal, boneVector,
+											   scene)
 		
 		mesh = FmdlFile.FmdlFile.Mesh()
 		mesh.vertices = vertices
