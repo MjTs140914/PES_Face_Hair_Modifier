@@ -6,7 +6,6 @@ This tool is *heavily* based on the
 
 * [PES-FMDL by the4chancup](https://github.com/the4chancup/pes-fmdl-blender). 
 
-*This tools is mixed from two base*
 
 ### Pre-Release tester
 * *Tsunami07*
